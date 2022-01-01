@@ -1,0 +1,11 @@
+{
+  "name": "foodranger",
+  "version": "1.0.0",
+  "description": "Food Ranger App for Algorizin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ujjwal Parajuli",
+  "license": "ISC"
+}
