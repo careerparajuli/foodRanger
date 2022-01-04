@@ -40,6 +40,8 @@ app.route("/resturants")
   });
 })
 
+//To create new resturant
+//Using post man to creat a resturant
 .post(function(req, res){
   const newFood = new Food({
     name: req.body.name,
@@ -48,6 +50,15 @@ app.route("/resturants")
     foodMenu: req.body.foodMenu
   });
   newFood.save();
+})
+
+//To delete all the resturants
+//Using postman to delete a resturant
+.delete(function(req, res){
+  Food.deleteMany(function(err){
+    if(err) console.log("Successfully deleted all articles");
+    else console.log(err);
+  });
 });
 
 //////////////////////////Request specific data ///////////////////////////////
@@ -58,6 +69,16 @@ app.route("/resturants/:id")
   Food.findOne({name:req.params.id}, function(err, foundResturant){
     if(foundResturant) res.send(foundResturant);
     else res.send(err +"No matching article");
+  });
+})
+
+//Deleting a specific resturant
+//localhost:3000/resturant/American%20Resturant
+.delete(function(req,res){
+  Food.deleteOne({name: req.params.id},
+    function(err){
+    if(err) console.log("Successfully deleted a articles");
+    else console.log(err);
   });
 });
 
