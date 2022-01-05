@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 //Connecting node.js to mongodb
-// http://localhost:3000/articles
+// http://localhost:3000/resturants
 mongoose.connect("mongodb://127.0.0.1/foodRanger", ()=>{
   console.log('Connected to mongoDB');
 },
@@ -32,7 +32,7 @@ const Food = mongoose.model("Food", foodSchema);
 
 ///////////////////////////Request targeting all data ////////////////////
 
-//localhost:3000/resturant
+//localhost:3000/resturants
 app.route("/resturants")
 .get(function(req, res){
   Food.find(function(err, foundFoods){
@@ -42,6 +42,7 @@ app.route("/resturants")
 
 //To create new resturant
 //Using post man to creat a resturant
+//localhost:3000/resturants
 .post(function(req, res){
   const newFood = new Food({
     name: req.body.name,
@@ -54,6 +55,7 @@ app.route("/resturants")
 
 //To delete all the resturants
 //Using postman to delete a resturant
+//localhost:3000/resturants
 .delete(function(req, res){
   Food.deleteMany(function(err){
     if(err) console.log("Successfully deleted all articles");
@@ -71,6 +73,25 @@ app.route("/resturants/:id")
     else res.send(err +"No matching article");
   });
 })
+
+// Updating a specific resturant
+// Updating specific field of the resturant unlike "PUT"
+
+//////////////////////////////////////CODE is not working ////////////////////////
+.patch(function(req, res){
+  Food.updateOne(
+    {title: req.params.id},
+    {$set: req.body},
+    function (err){
+      if(!err){
+        res.send("Successfully updated");
+      }
+      else{
+        res.send("Update failed");
+      }
+    });
+})
+
 
 //Deleting a specific resturant
 //localhost:3000/resturant/American%20Resturant
