@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
   address: String
 });
 
+//Creating model
 const User = new mongoose.model("User", userSchema);
 
 //Registering a new user
@@ -89,72 +90,63 @@ app.route("/users/:id")
     });
   })
 
-////////////////////////foodSchema/////////////////////////
-const foodSchema = {
+////////////////////////resturantSchema/////////////////////////
+const resturantSchema = {
   name: String,
   location: String,
-  rating: String,
-  foodMenu: Array,
-  reviews: Array
+  menu: Object
 };
 
 //Creating model
-const Food = mongoose.model("Food", foodSchema);
+const Resturant = mongoose.model("Resturant", resturantSchema);
 
-///////////////////////////Request targeting all data ////////////////////
-
+//Getting all resturants
 //localhost:3000/resturants
 app.route("/resturants")
   .get(function(req, res) {
-    Food.find(function(err, foundFoods) {
-      res.send(foundFoods);
+    Resturant.find(function(err, foundResturants) {
+      res.send(foundResturants);
     });
   })
 
-  //To create new resturant
-  //Using post man to creat a resturant
+  //Creating a new resturant
   //localhost:3000/resturants
   .post(function(req, res) {
-    const newFood = new Food({
+    const newResturant = new Resturant({
       name: req.body.name,
       location: req.body.location,
-      rating: req.body.rating,
-      foodMenu: req.body.foodMenu,
-      reviews: req.body.reviews
+      menu: req.body.menu
     });
-    newFood.save();
+    newResturant.save();
   })
 
   //To delete all the resturants
-  //Using postman to delete a resturant
   //localhost:3000/resturants
   .delete(function(req, res) {
-    Food.deleteMany(function(err) {
+    Resturant.deleteMany(function(err) {
       if (err) console.log("Successfully deleted all articles");
       else console.log(err);
     });
   });
 
-//////////////////////////Request specific data ///////////////////////////////
-
-//localhost:3000/Papa%20Jones
+//localhost:3000/:id
+//localhost:3000/61d8b7d1143e180177c82dea
 app.route("/resturants/:id")
   .get(function(req, res) {
-    Food.findOne({
-      name: req.params.id
+    Resturant.findOne({
+      _id: req.params.id
     }, function(err, foundResturant) {
       if (foundResturant) res.send(foundResturant);
       else res.send(err + "No matching article");
     });
   })
 
-  // Updating a specific resturant
-  // Updating specific field of the resturant unlike "PUT"
+// Updating a specific resturant
+// Updating specific field of the resturant unlike "PUT"
 
-  //////////////////////////////////////CODE is not working ////////////////////////
-  .patch(function(req, res) {
-    Food.updateOne({
-        title: req.params.id
+    .patch(function(req, res) {
+    Resturant.updateOne({
+        _id: req.params.id
       }, {
         $set: req.body
       },
@@ -167,12 +159,11 @@ app.route("/resturants/:id")
       });
   })
 
-
-  //Deleting a specific resturant
-  //localhost:3000/resturant/American%20Resturant
+//Deleting a specific resturant
+//localhost:3000/resturant/American%20Resturant
   .delete(function(req, res) {
-    Food.deleteOne({
-        name: req.params.id
+    Resturant.deleteOne({
+        _id: req.params.id
       },
       function(err) {
         if (err) console.log("Successfully deleted a articles");
