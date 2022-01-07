@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require('mongoose');
+const encrypt = require ('mongoose-encryption');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -20,10 +21,16 @@ mongoose.connect("mongodb+srv://parajuli:algorizin@cluster0.xymnw.mongodb.net/fo
   e => console.error(e));
 
 //Creating userSchema to save username and password to mongoDB Atlas
-const userSchema = {
+
+const userSchema = new mongoose.Schema({
   email: String,
   password: String
-}
+});
+
+//Encrypting the password
+const secret = "Algorizin";
+userSchema.plugin(encrypt, {secret:secret, encryptedFields: ["password"] });
+
 
 const User = new mongoose.model("User", userSchema);
 
