@@ -14,7 +14,7 @@ app.use(express.static("public"));
 
 //Connecting node.js to mongodb
 // http://localhost:3000/resturants
-mongoose.connect("mongodb://127.0.0.1/foodRanger", ()=>{
+mongoose.connect("mongodb+srv://parajuli:algorizin@cluster0.xymnw.mongodb.net/foodRanger", ()=>{
   console.log('Connected to mongoDB');
 },
 e=> console.error(e));
@@ -24,7 +24,8 @@ const foodSchema = {
   name: String,
   location: String,
   rating: String,
-  foodMenu: Array
+  foodMenu: Array,
+  reviews: Array
 };
 
 //Creating model
@@ -48,7 +49,8 @@ app.route("/resturants")
     name: req.body.name,
     location: req.body.location,
     rating: req.body.rating,
-    foodMenu: req.body.foodMenu
+    foodMenu: req.body.foodMenu,
+    reviews: req.body.reviews
   });
   newFood.save();
 })
