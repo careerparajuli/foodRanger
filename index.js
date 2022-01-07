@@ -1,55 +1,47 @@
-//
-require('dotenv').config();
+// Food Ranger ------- Algorizin Project
+
 const express = require("express");
 const bodyParser = require("body-parser");
-const ejs = require("ejs");
 const mongoose = require('mongoose');
 const md5 = require('md5');
 
-
 const app = express();
-app.set('view engine', 'ejs');
 
-//Using body parser in order to parse request
+//Using body parser to parse request
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(express.static("public"));
 
-//Connecting node.js to mongodb
+//Connecting node.js to mongoDB Atlas
 // http://localhost:3000/resturants
 mongoose.connect("mongodb+srv://parajuli:algorizin@cluster0.xymnw.mongodb.net/foodRanger", () => {
     console.log('Connected to mongoDB Atlas');
   },
   e => console.error(e));
 
-//Creating userSchema to save username and password to mongoDB Atlas
-
+////////////////////////userSchema/////////////////////////
+//Making email and password mandatory
 const userSchema = new mongoose.Schema({
-  email: String,
-  password: String
+  fname: String,
+  lname: String,
+  email: {type: String,require:true},
+  password: {type: String,require:true},
+  phone:String,
+  address: String
 });
 
 const User = new mongoose.model("User", userSchema);
 
-
-app.get("/", function(req, res) {
-  res.render("home");
-});
-
-app.get("/login", function(req, res) {
-  res.render("Login");
-});
-app.get("/register", function(req, res) {
-  res.render("Register");
-});
-
-
-//To target the register app
-app.post("/register", function(req, res) {
+//Registering a new user
+app.post("/auth/register", function(req, res) {
   const newUser = new User({
+    fname: req.body.fname,
+    lname:req.body.lname,
     email: req.body.email,
-    password: md5(req.body.password)
+    password: md5(req.body.password),
+    phone: req.body.phone,
+    address: req.body.address
   });
   newUser.save(function(err) {
     if (err) {
@@ -60,14 +52,14 @@ app.post("/register", function(req, res) {
   });
 });
 
-//TO Login
-app.post("/login", function(req, res) {
+//Loggin registered user
+app.post("/auth/login", function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
 
   User.findOne({email: email}, function(err, foundUser) {
     if (err) {
-      res.send(err+ "Login Failed" );
+      res.send(err);
     } else {
       if (foundUser) {
         if (foundUser.password === password) {
@@ -78,8 +70,26 @@ app.post("/login", function(req, res) {
   });
 });
 
-///////////////////////////////////////////////////////
-//Creating new foodSchema
+//Getting all users informations
+app.route("/users")
+  .get(function(req, res) {
+    User.find(function(err, foundUsers) {
+      res.send(foundUsers);
+    });
+  });
+
+//Getting specific user information
+app.route("/users/:id")
+  .get(function(req, res) {
+    User.findOne({
+      id: req.params.id
+    }, function(err, foundUser) {
+      if (foundUser) res.send(foundUser);
+      else res.send(err + "No matching article");
+    });
+  })
+
+////////////////////////foodSchema/////////////////////////
 const foodSchema = {
   name: String,
   location: String,
