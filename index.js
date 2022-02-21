@@ -154,10 +154,9 @@ app.route("/resturants")
       });
   })
 
-/*
-7) Getting a resturant info
-*/
-app.route("/resturants/:id")
+  /*
+  7) Getting a resturant info
+  */
   .get(function(req, res) {
     Resturant.findOne({
       _id: req.params.id
@@ -166,6 +165,146 @@ app.route("/resturants/:id")
       else res.send(err + "No matching article");
     });
   });
+
+/*
+8) Listing all orders of a resturant
+*/
+app.get('resturants/:id/orders', async (req, res) => {
+  try {
+    const orders = await Order
+      .find({
+        "restaurant_id": req.params.id
+      })
+      .populate("user_id")
+      .populate("restaurant_id");
+    res.json({
+      message: orders
+    });
+  } catch (err) {
+    res.json({
+      message: err
+    });
+  }
+});
+
+/*
+9) Placing an order to the resturant
+*/
+app.post('resturants/:id/orders', async (req, res) => {
+  const order = new Order({
+    restaurant_id: req.params.id,
+    user_id: req.body.user_id,
+    items: req.body.items,
+    subtotal: req.body.subtotal
+  });
+  const savedOrder = await order.save();
+  res.json({
+    message: savedOrder
+  });
+});
+
+/*
+10) Listing orders placed by a specific users on a resturant
+*/
+app.get('resturants/:id/orders/:userId', async (req, res) => {
+  try {
+    const orders = await Order
+      .find({
+        "restaurant_id": req.params.id,
+        "user_id": req.params.userId
+      })
+      .populate("user_id")
+      .populate("restaurant_id");
+    res.json({
+      message: orders
+    });
+  } catch (err) {
+    res.json({
+      message: err
+    });
+  }
+});
+
+/*
+11) Listing orders placed by a user on any resturant
+*/
+app.get('users/:id/reviews', async (req, res) => {
+  try {
+    const reviews = await Review
+      .find({
+        "user_id": req.params.id
+      })
+      .populate("user_id")
+      .populate("restaurant_id");
+    res.json({
+      message: reviews
+    });
+  } catch (err) {
+    res.json({
+      message: err
+    });
+  }
+});
+
+/*
+12) Posting a review
+*/
+app.post('resturants/:id/reviews', async (req, res) => {
+  try {
+    const review = new Review({
+      user_id: req.body.user_id,
+      restaurant_id: req.params.id,
+      content: req.body.content,
+      rating: req.body.rating
+    });
+    const savedReview = await review.save();
+    res.json({
+      message: savedReview
+    });
+  } catch (err) {
+    res.json({
+      message: err
+    })
+  }
+});
+/*
+13) Listing resturant review
+*/
+app.get('resturants/:id/reviews', async (req, res) => {
+  try {
+    const reviews = await Review
+      .find({
+        "restaurant_id": req.params.id
+      })
+      .populate("user_id")
+      .populate("restaurant_id");
+    res.json({
+      message: reviews
+    });
+  } catch (err) {
+    res.json({
+      messsage: err
+    });
+  }
+});
+
+/*
+14) Deleting a review
+*/
+app.delete('/:id/reviews/:reviewId', async (req, res) => {
+  try {
+    const review = await Review.remove({
+      "_id": req.params.reviewId
+    });
+    res.json({
+      message: reviews
+    });
+  } catch (err) {
+    res.json({
+      message: err
+    });
+  }
+});
 
 //Listening on port 3000
 app.listen(3000, function() {
