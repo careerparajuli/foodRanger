@@ -1,12 +1,17 @@
-// Food Ranger ------- Algorizin Project
+// Food Ranger ------- Algorizin's Project
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 const md5 = require('md5');
 
-const app = express();
+//Importing files from models folder
+const User = require('./models/User.js');
+const Order = require('./models/Order.js');
+const Review = require('./models/Review.js');
+const Resturant = require('./models/Resturant.js');
 
+const app = express();
 //Using body parser to parse request
 app.use(bodyParser.urlencoded({
   extended: true
@@ -20,25 +25,11 @@ mongoose.connect("mongodb+srv://parajuli:algorizin@cluster0.xymnw.mongodb.net/fo
   },
   e => console.error(e));
 
-////////////////////////userSchema/////////////////////////
-//Making email and password mandatory
-const userSchema = new mongoose.Schema({
-  fname: String,
-  lname: String,
-  email: {type: String,require:true},
-  password: {type: String,require:true},
-  phone:String,
-  address: String
-});
-
-//Creating model
-const User = new mongoose.model("User", userSchema);
-
 //Registering a new user
 app.post("/auth/register", function(req, res) {
   const newUser = new User({
     fname: req.body.fname,
-    lname:req.body.lname,
+    lname: req.body.lname,
     email: req.body.email,
     password: md5(req.body.password),
     phone: req.body.phone,
@@ -58,7 +49,9 @@ app.post("/auth/login", function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
 
-  User.findOne({email: email}, function(err, foundUser) {
+  User.findOne({
+    email: email
+  }, function(err, foundUser) {
     if (err) {
       res.send(err);
     } else {
@@ -90,15 +83,6 @@ app.route("/users/:id")
     });
   })
 
-////////////////////////resturantSchema/////////////////////////
-const resturantSchema = {
-  name: String,
-  location: String,
-  menu: Object
-};
-
-//Creating model
-const Resturant = mongoose.model("Resturant", resturantSchema);
 
 //Getting all resturants
 //localhost:3000/resturants
@@ -141,10 +125,10 @@ app.route("/resturants/:id")
     });
   })
 
-// Updating a specific resturant
-// Updating specific field of the resturant unlike "PUT"
+  // Updating a specific resturant
+  // Updating specific field of the resturant unlike "PUT"
 
-    .patch(function(req, res) {
+  .patch(function(req, res) {
     Resturant.updateOne({
         _id: req.params.id
       }, {
@@ -159,8 +143,8 @@ app.route("/resturants/:id")
       });
   })
 
-//Deleting a specific resturant
-//localhost:3000/resturant/American%20Resturant
+  //Deleting a specific resturant
+  //localhost:3000/resturant/American%20Resturant
   .delete(function(req, res) {
     Resturant.deleteOne({
         _id: req.params.id
@@ -170,6 +154,13 @@ app.route("/resturants/:id")
         else console.log(err);
       });
   });
+
+
+////////////////////////reviewSchema/////////////////////////
+
+
+
+
 
 //Listening on port 3000
 app.listen(3000, function() {
