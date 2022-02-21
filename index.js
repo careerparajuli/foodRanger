@@ -25,7 +25,9 @@ mongoose.connect("mongodb+srv://parajuli:algorizin@cluster0.xymnw.mongodb.net/fo
   },
   e => console.error(e));
 
-//Registering a new user
+/*
+1) Registering a new user
+*/
 app.post("/auth/register", function(req, res) {
   const newUser = new User({
     fname: req.body.fname,
@@ -44,7 +46,9 @@ app.post("/auth/register", function(req, res) {
   });
 });
 
-//Loggin registered user
+/*
+2) Loggin registered user
+*/
 app.post("/auth/login", function(req, res) {
   const email = req.body.email;
   const password = md5(req.body.password);
@@ -64,7 +68,9 @@ app.post("/auth/login", function(req, res) {
   });
 });
 
-//Getting all users informations
+/*
+---Getting all users informations
+*/
 app.route("/users")
   .get(function(req, res) {
     User.find(function(err, foundUsers) {
@@ -72,7 +78,9 @@ app.route("/users")
     });
   });
 
-//Getting specific user information
+/*
+3) Getting specific user information
+*/
 app.route("/users/:id")
   .get(function(req, res) {
     User.findOne({
@@ -83,9 +91,9 @@ app.route("/users/:id")
     });
   })
 
-
-//Getting all resturants
-//localhost:3000/resturants
+/*
+---Getting all resturants on database
+*/
 app.route("/resturants")
   .get(function(req, res) {
     Resturant.find(function(err, foundResturants) {
@@ -93,8 +101,9 @@ app.route("/resturants")
     });
   })
 
-  //Creating a new resturant
-  //localhost:3000/resturants
+  /*
+  4) Creating a new restutant
+  */
   .post(function(req, res) {
     const newResturant = new Resturant({
       name: req.body.name,
@@ -104,30 +113,9 @@ app.route("/resturants")
     newResturant.save();
   })
 
-  //To delete all the resturants
-  //localhost:3000/resturants
-  .delete(function(req, res) {
-    Resturant.deleteMany(function(err) {
-      if (err) console.log("Successfully deleted all articles");
-      else console.log(err);
-    });
-  });
-
-//localhost:3000/:id
-//localhost:3000/61d8b7d1143e180177c82dea
-app.route("/resturants/:id")
-  .get(function(req, res) {
-    Resturant.findOne({
-      _id: req.params.id
-    }, function(err, foundResturant) {
-      if (foundResturant) res.send(foundResturant);
-      else res.send(err + "No matching article");
-    });
-  })
-
-  // Updating a specific resturant
-  // Updating specific field of the resturant unlike "PUT"
-
+  /*
+  5) Updating a resturant
+  */
   .patch(function(req, res) {
     Resturant.updateOne({
         _id: req.params.id
@@ -143,8 +131,19 @@ app.route("/resturants/:id")
       });
   })
 
-  //Deleting a specific resturant
-  //localhost:3000/resturant/American%20Resturant
+  /*
+ ---Deleting all resturant
+  */
+  .delete(function(req, res) {
+    Resturant.deleteMany(function(err) {
+      if (err) console.log("Successfully deleted all articles");
+      else console.log(err);
+    });
+  })
+
+  /*
+6) Deleting a resturant
+  */
   .delete(function(req, res) {
     Resturant.deleteOne({
         _id: req.params.id
@@ -153,14 +152,20 @@ app.route("/resturants/:id")
         if (err) console.log("Successfully deleted a articles");
         else console.log(err);
       });
+  })
+
+/*
+7) Getting a resturant info
+*/
+app.route("/resturants/:id")
+  .get(function(req, res) {
+    Resturant.findOne({
+      _id: req.params.id
+    }, function(err, foundResturant) {
+      if (foundResturant) res.send(foundResturant);
+      else res.send(err + "No matching article");
+    });
   });
-
-
-////////////////////////reviewSchema/////////////////////////
-
-
-
-
 
 //Listening on port 3000
 app.listen(3000, function() {
